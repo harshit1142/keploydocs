@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
+import { ModeToggle } from "@/components/ModeToggle";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,53 +22,37 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gradient-to-br from-white to-slate-50 dark:from-slate-950 dark:to-slate-900`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased 
+        /* Light Mode Defaults */
+        bg-white text-slate-900 
+        /* Dark Mode Overrides */
+        dark:bg-slate-950 dark:text-slate-50 
+        transition-colors duration-300`}
       >
-        <div className="min-h-screen flex flex-col">
-          {/* Header */}
-          <header className="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-slate-700 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md">
-            <div className="container-custom flex items-center justify-between py-4">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">K</span>
-                </div>
-                <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent hidden sm:inline">
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <div className="min-h-screen flex flex-col">
+            {/* Header with Dark Mode Support */}
+            <header
+              className="sticky top-0 z-40 w-full border-b border-slate-200 bg-white/80 backdrop-blur-md 
+              dark:border-slate-800 dark:bg-slate-950/80"
+            >
+              <div className="container-custom flex items-center justify-between py-4">
+                <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   Keploy Docs
                 </span>
+                <ModeToggle />
               </div>
-              <nav className="hidden md:flex gap-8 text-sm font-medium">
-                <a
-                  href="https://keploy.io/docs/"
-                  className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                >
-                  Docs
-                </a>
-                <a
-                  href="https://github.com/keploy/keploy"
-                  className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                >
-                  Github
-                </a>
-              </nav>
-            </div>
-          </header>
+            </header>
 
-          {/* Main Content */}
-          <main className="flex-1 container-custom">{children}</main>
-
-          {/* Footer */}
-          <footer className="border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 py-8">
-            <div className="container-custom text-center text-sm text-slate-600 dark:text-slate-400">
-              <p>© 2026 Keploy. Built with Next.js and Tailwind CSS.</p>
-            </div>
-          </footer>
-        </div>
+            <main className="flex-1 container-custom py-10">{children}</main>
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );
