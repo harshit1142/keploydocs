@@ -1,0 +1,40 @@
+# Mastering Keploy: Go + Echo Integration
+
+Keploy is a modern, eBPF-based testing tool that records real-world API traffic to generate test cases and mocks automatically[cite: 6, 9]. 
+
+## Why Keploy for Go Developers?
+Writing manual mocks for `PostgreSQL` is time-consuming and prone to human error[cite: 41]. Keploy intercepts these network calls and creates deterministic mocks so you can test your logic without a live database[cite: 21, 30].
+
+<Callout type="info">
+  **The "A-ha!" Moment:** After recording, you can stop your Postgres container entirely. Keploy will replay the recorded database responses, making your CI/CD pipeline incredibly fast[cite: 31].
+</Callout>
+
+## 🛠️ Implementation Steps
+
+### 1. Installation
+Install the CLI to start capturing traffic[cite: 9]:
+<CodeBlock 
+  title="Terminal" 
+  code='curl --silent -O -L https://keploy.io/install.sh && source install.sh' 
+/>
+
+### 2. Record Mode
+Run your Echo app with Keploy. It will watch every request and database query[cite: 30].
+<CodeBlock 
+  title="Record" 
+  code='keploy record -c "docker compose up" --container-name "echoApp" --build-delay 50' 
+/>
+
+### 3. Generate Traffic
+Trigger your API. Keploy will save this as a test case in a `.yaml` file[cite: 30].
+<CodeBlock 
+  title="CURL" 
+  code='curl --request POST --url http://localhost:8082/url --header "content-type: application/json" --data "{\"url\": \"https://github.com\"}"' 
+/>
+
+### 4. Test Mode
+Run the test suite to verify everything works as expected[cite: 30].
+<CodeBlock 
+  title="Test" 
+  code='keploy test -c "docker compose up" --container-name "echoApp" --build-delay 50 --delay 10' 
+/>
