@@ -1,4 +1,4 @@
-<div className="prose prose-slate dark:prose-invert max-w-none">
+
 # Mastering Keploy: Go + Echo Integration
 
 Keploy is a modern, eBPF-based testing tool that records real-world API traffic to generate test cases and mocks automatically[cite: 6, 9]. 
@@ -9,6 +9,21 @@ Writing manual mocks for `PostgreSQL` is time-consuming and prone to human error
 <Callout type="info">
   **The "A-ha!" Moment:** After recording, you can stop your Postgres container entirely. Keploy will replay the recorded database responses, making your CI/CD pipeline incredibly fast[cite: 31].
 </Callout>
+
+## ❓ Why Keploy?
+
+Testing in Go often requires writing extensive boilerplate for mocks—especially when dealing with Databases like MongoDB or external APIs. 
+
+* **Zero Code Testing**: Keploy records actual API traffic and generates test cases automatically.
+* **No Manual Mocks**: It mocks dependencies (DBs, gRPC, etc.) at the network layer, so you don't have to write a single line of `mock.On(...)`.
+* **Shadow Traffic**: Validate how new code behaves with production-like data without affecting real users.
+
+<Callout type="tip">
+  For DevRel teams, Keploy reduces the "Time to First Green Test," which is a critical metric for developer adoption.
+</Callout>
+
+
+
 
 ## 🛠️ Implementation Steps
 
@@ -40,4 +55,22 @@ Run the test suite to verify everything works as expected[cite: 30].
   code='keploy test -c "docker compose up" --container-name "echoApp" --build-delay 50 --delay 10' 
 />
 
-</div>
+## 🧠 How Keploy Works
+
+Before we jump into the code, it's helpful to understand what's happening under the hood. Keploy acts as a **proxy** for your application.
+
+1. **Record Mode**: Keploy captures the network calls (CRUD operations, external API calls, DB queries) while you interact with your app.
+2. **Mock Generation**: It turns those interactions into YAML files (test cases and data mocks).
+3. **Test Mode**: Keploy replays those mocks during testing, so you don't need a live Database or third-party API to run your tests.
+
+<Callout type="info">
+  **Why this matters:** This eliminates the need for manual mock writing, which usually takes up 30-40% of a developer's testing time.
+</Callout>
+
+## 🛠 Troubleshooting Common Issues
+
+### 1. Docker Permission Denied
+If you see a permission error when running `keploy record`, ensure your user is part of the docker group:
+```bash
+sudo usermod -aG docker $USER
+
